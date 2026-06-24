@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Doc2SDK 🚀
 
 **AI-Powered API Documentation to SDK & Integration Code Generator**
@@ -13,11 +14,9 @@
 
 # 📌 Overview
 
-Integrating third-party APIs often requires developers to spend hours reading documentation, understanding authentication mechanisms, locating relevant endpoints, and writing repetitive boilerplate code.
+**Doc2SDK** is a Generative AI-powered developer assistant that leverages Large Language Models (LLMs) to automatically understand API documentation and generate integration-ready SDK wrappers.
 
-**Doc2SDK** simplifies this process by leveraging Large Language Models (LLMs) to automatically analyze API documentation and generate integration-ready wrapper classes.
-
-The developer simply provides:
+Instead of manually reading lengthy API documentation, identifying authentication methods, searching for endpoints, and writing repetitive boilerplate code, developers can simply provide:
 
 * API Documentation URL
 * Intended Use Case
@@ -200,10 +199,122 @@ doc2sdk/
 │
 ├── README.md
 └── package.json
+=======
+The system uses LLMs to analyze documentation, understand API capabilities, recommend the best integration approach, and generate production-ready code.
+
+---
+
+## How GenAI is Used
+
+### 1. Documentation Understanding
+
+The LLM reads extracted API documentation and performs semantic analysis to understand:
+
+* Authentication mechanisms
+* API resources
+* Endpoint purposes
+* Request and response formats
+* Integration requirements
+
+Unlike traditional rule-based parsers, the model understands the context and meaning of documentation.
+
+---
+
+### 2. Intelligent Endpoint Selection
+
+Based on the developer's use case, the LLM identifies only the most relevant endpoints.
+
+Example:
+
+**Use Case:** "Create a payment"
+
+The model automatically selects:
+
+```text
+POST /payments
+GET /payments/{id}
+```
+
+instead of showing every endpoint available in the documentation.
+
+---
+
+### 3. SDK Recommendation
+
+The LLM determines whether:
+
+* Official SDK exists
+* Community SDK exists
+* REST integration is preferable
+
+and recommends the optimal integration path.
+
+---
+
+### 4. Wrapper Code Generation
+
+Using API analysis results, the LLM generates:
+
+* Java API Clients
+* Python SDK Wrappers
+* JavaScript Integration Modules
+
+including:
+
+* Authentication handling
+* Request construction
+* Error handling
+* Sample usage
+
+---
+
+### 5. Integration Guide Generation
+
+The model automatically creates:
+
+* Setup Instructions
+* Required Dependencies
+* Installation Commands
+* Example API Calls
+* Best Practices
+
+---
+
+## LLM Workflow
+
+```text
+API Documentation URL
+          │
+          ▼
+Documentation Extraction
+          │
+          ▼
+Content Preprocessing
+          │
+          ▼
+Large Language Model
+(Gemini / GPT)
+          │
+          ├── Authentication Detection
+          ├── Endpoint Discovery
+          ├── SDK Identification
+          ├── Use Case Mapping
+          ├── Code Generation
+          │
+          ▼
+Structured Integration Plan
+          │
+          ▼
+SDK Wrapper Generation
+          │
+          ▼
+Downloadable Integration Package
+>>>>>>> 92106b6 (Update project files)
 ```
 
 ---
 
+<<<<<<< HEAD
 # 🛠️ Tech Stack
 
 ## Frontend
@@ -213,25 +324,93 @@ doc2sdk/
 * Axios
 
 ## Backend
+=======
+## GenAI Components
+
+### Documentation Analysis Agent
+
+Responsible for:
+
+* Understanding API documentation
+* Extracting key information
+* Building structured API knowledge
+
+### Integration Recommendation Agent
+
+Responsible for:
+
+* Selecting appropriate endpoints
+* Recommending SDKs
+* Choosing REST vs SDK approach
+
+### Code Generation Agent
+
+Responsible for:
+
+* Generating wrapper classes
+* Producing reusable code
+* Creating implementation examples
+
+---
+
+## Innovation
+
+Traditional API integration tools only scrape documentation.
+
+**Doc2SDK uses Generative AI and Large Language Models to understand, reason, recommend, and generate integration-ready code automatically.**
+
+This transforms API documentation into a developer-ready software component, significantly reducing integration effort and development time.
+
+---
+
+## Tech Stack
+
+### Frontend
+
+* React.js
+* Tailwind CSS
+
+### Backend
+>>>>>>> 92106b6 (Update project files)
 
 * Node.js
 * Express.js
 
+<<<<<<< HEAD
 ## AI Layer
 
 * Gemini API
 
 ## Web Scraping
+=======
+### GenAI Layer
+
+* Gemini 2.5 Pro / Gemini 2.5 Flash
+* Prompt Engineering
+* Structured JSON Output Generation
+
+### Documentation Processing
+>>>>>>> 92106b6 (Update project files)
 
 * Axios
 * Cheerio
 
+<<<<<<< HEAD
 ## Optional Database
 
+=======
+### Optional Enhancements
+
+* Vector Database (Pinecone)
+* RAG Pipeline
+* LangChain
+* OpenAI GPT Models
+>>>>>>> 92106b6 (Update project files)
 * MongoDB Atlas
 
 ---
 
+<<<<<<< HEAD
 # 🔄 Workflow
 
 ### Step 1
@@ -445,3 +624,8 @@ This project is intended for educational, portfolio, and hackathon purposes.
 
 ---
 
+=======
+## Project Category
+
+**Generative AI (GenAI) + Large Language Models (LLM) + Developer Productivity + Software Engineering Automation**
+>>>>>>> 92106b6 (Update project files)
