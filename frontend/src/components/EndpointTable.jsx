@@ -1,29 +1,61 @@
+const METHOD_STYLES = {
+  GET:    'badge-get',
+  POST:   'badge-post',
+  PUT:    'badge-put',
+  PATCH:  'badge-patch',
+  DELETE: 'badge-delete',
+};
+
 export default function EndpointTable({ endpoints }) {
-  const getMethodColor = (method) => {
-    switch(method?.toUpperCase()) {
-      case 'GET': return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
-      case 'POST': return 'bg-green-500/20 text-green-400 border border-green-500/30';
-      case 'PUT': return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
-      case 'DELETE': return 'bg-red-500/20 text-red-400 border border-red-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
-    }
-  };
+  if (!endpoints?.length) {
+    return (
+      <div className="card" style={{ padding: '1rem' }}>
+        <p style={{ textAlign: 'center', fontSize: '0.75rem', color: '#666660', padding: '1rem 0' }}>No endpoints detected</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="glass-dark rounded-xl p-6 shadow-lg border border-white/5 overflow-hidden flex flex-col max-h-[500px]">
-      <h2 className="text-xl font-semibold mb-4">Detected Endpoints ({endpoints?.length || 0})</h2>
-      <div className="overflow-y-auto pr-2 space-y-3 flex-grow">
-        {endpoints?.map((ep, idx) => (
-          <div key={idx} className="bg-dark-900/50 p-3 rounded-lg border border-white/5">
-            <div className="flex items-center gap-2 mb-1">
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase ${getMethodColor(ep.method)}`}>
-                {ep.method}
-              </span>
-              <code className="text-xs text-gray-300 truncate">{ep.path}</code>
-            </div>
-            <p className="text-xs text-gray-400 truncate" title={ep.purpose}>{ep.purpose}</p>
-          </div>
-        ))}
+    <div className="card" style={{ overflow: 'hidden' }}>
+      <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #1a2e22', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#b0a898' }}>
+          Endpoints
+        </span>
+        <span style={{ fontSize: '0.65rem', fontFamily: 'JetBrains Mono, monospace', color: '#c9a84c', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.15rem 0.5rem', borderRadius: '2px' }}>
+          {endpoints.length}
+        </span>
+      </div>
+      <div style={{ overflowY: 'auto', maxHeight: '260px' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.75rem' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid #1a2e22' }}>
+              <th style={{ textAlign: 'left', padding: '0.5rem 1rem', color: '#666660', fontWeight: 500, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase', width: '72px' }}>Method</th>
+              <th style={{ textAlign: 'left', padding: '0.5rem 1rem', color: '#666660', fontWeight: 500, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Path</th>
+              <th style={{ textAlign: 'left', padding: '0.5rem 1rem', color: '#666660', fontWeight: 500, fontSize: '0.65rem', letterSpacing: '0.08em', textTransform: 'uppercase' }} className="hidden sm:table-cell">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {endpoints.map((ep, idx) => {
+              const m = ep.method?.toUpperCase();
+              return (
+                <tr key={idx} style={{ borderBottom: '1px solid #1a2e22' }}>
+                  <td style={{ padding: '0.6rem 1rem' }}>
+                    <span className={`${METHOD_STYLES[m] || 'badge-default'}`}
+                      style={{ fontSize: '0.6rem', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', padding: '0.15rem 0.4rem', borderRadius: '2px' }}>
+                      {m}
+                    </span>
+                  </td>
+                  <td style={{ padding: '0.6rem 1rem' }}>
+                    <code style={{ fontSize: '0.72rem', fontFamily: 'JetBrains Mono, monospace', color: '#ede5d0' }}>{ep.path}</code>
+                  </td>
+                  <td style={{ padding: '0.6rem 1rem', color: '#8a8a80', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} className="hidden sm:table-cell">
+                    {ep.purpose}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

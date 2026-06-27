@@ -7,28 +7,46 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Menlo', 'monospace'],
+        serif: ['Georgia', 'serif'],
       },
       colors: {
-        primary: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
-          950: '#2e1065',
+        // Gold accent — headlines, CTAs, highlights
+        gold: {
+          300: '#e8d5a3',
+          400: '#d4b565',
+          500: '#c9a84c',
+          600: '#b8923a',
+          700: '#9a7a2f',
         },
-        dark: {
-          900: '#0f172a',
-          800: '#1e293b',
-          700: '#334155',
-        }
-      }
+        // Deep forest green backgrounds
+        forest: {
+          950: '#060d09',
+          900: '#0b1610',
+          800: '#0f1d14',
+          700: '#121f18',
+          600: '#162619',
+          500: '#1a2e22',
+          400: '#24402e',
+          300: '#2e5239',
+        },
+        // Cream/warm text
+        cream: {
+          50:  '#faf8f2',
+          100: '#f5f0e4',
+          200: '#ede5d0',
+          300: '#d4cdb8',
+          400: '#b0a898',
+          500: '#8a8a80',
+          600: '#666660',
+        },
+        // Aliases for design system
+        canvas:  '#0b1610',
+        overlay: '#0f1d14',
+        border:  '#1a2e22',
+        borderMuted: '#243a2a',
+      },
     },
   },
   plugins: [],

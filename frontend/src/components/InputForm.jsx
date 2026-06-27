@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import Loader from './Loader.jsx';
+
+const LANGUAGES = [
+  { value: 'javascript', label: 'JavaScript / Node.js' },
+  { value: 'python',     label: 'Python' },
+  { value: 'java',       label: 'Java' },
+];
 
 export default function InputForm({ onSubmit, loading }) {
-  const [url, setUrl] = useState('');
-  const [useCase, setUseCase] = useState('');
+  const [url,      setUrl]      = useState('');
+  const [useCase,  setUseCase]  = useState('');
   const [language, setLanguage] = useState('javascript');
 
   const handleSubmit = (e) => {
@@ -12,55 +17,102 @@ export default function InputForm({ onSubmit, loading }) {
     onSubmit({ url, useCase, language });
   };
 
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.7rem',
+    fontWeight: 600,
+    letterSpacing: '0.1em',
+    textTransform: 'uppercase',
+    color: '#b0a898',
+    marginBottom: '0.5rem',
+  };
+
   return (
-    <div className="glass-dark rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 to-blue-500"></div>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="card" style={{ padding: '1.5rem' }}>
+      {/* Gold top accent line */}
+      <div style={{ height: '2px', background: 'linear-gradient(90deg, #c9a84c, transparent)', marginBottom: '1.5rem', borderRadius: '1px' }} />
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+        {/* URL */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">API Documentation URL</label>
+          <label style={labelStyle}>Documentation URL *</label>
           <input
             type="url"
             required
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={e => setUrl(e.target.value)}
             placeholder="https://stripe.com/docs/api"
-            className="w-full bg-dark-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+            className="input-base"
           />
         </div>
 
+        {/* Use Case */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Intended Use Case (Optional)</label>
+          <label style={labelStyle}>
+            Intended Use Case
+            <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, color: '#666660', marginLeft: '0.4rem' }}>
+              (optional)
+            </span>
+          </label>
           <textarea
-            rows="3"
+            rows={3}
             value={useCase}
-            onChange={(e) => setUseCase(e.target.value)}
+            onChange={e => setUseCase(e.target.value)}
             placeholder="e.g. I need to create payments and handle refunds."
-            className="w-full bg-dark-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all resize-none"
-          ></textarea>
+            className="input-base"
+            style={{ resize: 'none' }}
+          />
         </div>
 
+        {/* Language */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Target Language</label>
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="w-full bg-dark-900 border border-gray-700 rounded-lg px-4 py-3 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-          >
-            <option value="javascript">JavaScript / Node.js</option>
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-          </select>
+          <label style={labelStyle}>Target Language</label>
+          <div style={{ position: 'relative' }}>
+            <select
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
+              className="input-base"
+              style={{ appearance: 'none', paddingRight: '2rem', cursor: 'pointer' }}
+            >
+              {LANGUAGES.map(l => (
+                <option key={l.value} value={l.value}
+                  style={{ backgroundColor: '#0b1610', color: '#ede5d0' }}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+            <svg
+              style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#666660' }}
+              width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
-          disabled={loading}
-          className={`w-full py-4 px-6 rounded-lg text-white font-medium text-lg flex items-center justify-center gap-2 transition-all ${loading ? 'bg-primary-600/50 cursor-not-allowed' : 'bg-gradient-to-r from-primary-600 to-blue-600 hover:from-primary-500 hover:to-blue-500'}`}
+          disabled={loading || !url}
+          className="btn-primary"
+          style={{ justifyContent: 'center', width: '100%', padding: '0.65rem' }}
         >
-          {loading ? <Loader text="Analyzing..." /> : <><ArrowRight size={20} /> Generate SDK</>}
+          {loading ? (
+            <>
+              <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" opacity="0.25"/>
+                <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" opacity="0.75"/>
+              </svg>
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <ArrowRight size={14} />
+              Generate SDK
+            </>
+          )}
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }

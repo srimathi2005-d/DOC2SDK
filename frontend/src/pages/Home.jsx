@@ -1,85 +1,130 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Code2, Cpu, Zap } from 'lucide-react';
+import { Globe, Cpu, Code2, Package, BookOpen, Zap } from 'lucide-react';
 import InputForm from '../components/InputForm.jsx';
 import { apiService } from '../services/apiService.js';
 
+const FEATURES = [
+  { icon: Globe,    title: 'Documentation Scraping', desc: 'Fetches and parses any public API documentation URL.' },
+  { icon: Cpu,      title: 'AI-Powered Analysis',    desc: 'Extracts endpoints, auth patterns, and base URLs.' },
+  { icon: Code2,    title: 'SDK Generation',          desc: 'Produces idiomatic wrapper code in your chosen language.' },
+  { icon: Package,  title: 'SDK Detection',           desc: 'Identifies official packages and install commands.' },
+  { icon: BookOpen, title: 'Integration Guide',       desc: 'Step-by-step setup instructions with the generated code.' },
+  { icon: Zap,      title: 'Instant Download',        desc: 'Download the generated file ready for your project.' },
+];
+
 export default function Home() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error,   setError]   = useState(null);
   const navigate = useNavigate();
 
   const handleAnalyze = async (formData) => {
     setLoading(true);
     setError(null);
     try {
-      // Step 1: Analyze Documentation
       const apiData = await apiService.analyzeDocs(formData.url, formData.useCase, formData.language);
-      
-      // We pass the partial data to the Results page where the Generation step will happen
       navigate('/results', { state: { apiData, reqInfo: formData } });
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.error || 'Failed to process documentation. Please try again.');
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
-      <div className="text-center mb-16">
-        <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-          From Docs to <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-blue-400">SDK</span> in Seconds
+    <div className="max-w-screen-xl mx-auto px-6 py-14">
+
+      {/* ── Page heading ── */}
+      <div className="text-center mb-14">
+        {/* Gold rule */}
+        <div className="flex items-center justify-center gap-4 mb-6">
+          <div style={{ height: '1px', width: '60px', backgroundColor: '#c9a84c', opacity: 0.5 }} />
+          <span style={{ fontSize: '0.65rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#c9a84c' }}>
+            API Integration Tool
+          </span>
+          <div style={{ height: '1px', width: '60px', backgroundColor: '#c9a84c', opacity: 0.5 }} />
+        </div>
+
+        <h1 style={{
+          fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
+          fontWeight: 700,
+          color: '#c9a84c',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          marginBottom: '0.75rem',
+          lineHeight: 1.2,
+        }}>
+          Documentation to SDK
         </h1>
-        <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-          Paste any API documentation URL and let our GenAI instantly generate production-ready wrappers, authentication setups, and integration guides.
+        <p style={{ color: '#b0a898', fontSize: '0.9rem', maxWidth: '480px', margin: '0 auto', lineHeight: 1.8 }}>
+          Paste any API documentation URL. Doc2SDK analyzes the page and generates
+          production-ready wrapper code in your chosen language.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12 items-center">
-        <div>
+      {/* ── Main layout ── */}
+      <div className="grid lg:grid-cols-5 gap-10 items-start mb-16">
+
+        {/* Form */}
+        <div className="lg:col-span-2">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-lg text-sm mb-4">
+            <div style={{
+              marginBottom: '1rem',
+              padding: '0.75rem 1rem',
+              backgroundColor: 'rgba(239,68,68,0.08)',
+              border: '1px solid rgba(239,68,68,0.2)',
+              borderRadius: '4px',
+              color: '#f87171',
+              fontSize: '0.8rem',
+            }}>
               {error}
             </div>
           )}
           <InputForm onSubmit={handleAnalyze} loading={loading} />
+
+          {/* Test URLs */}
+          <div style={{ marginTop: '1.25rem' }}>
+            <p style={{ fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#666660', marginBottom: '0.6rem' }}>
+              Try with
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              {[
+                'https://docs.github.com/en/rest',
+                'https://stripe.com/docs/api',
+                'https://jsonplaceholder.typicode.com/',
+              ].map(url => (
+                <span key={url}
+                  style={{ fontSize: '0.72rem', fontFamily: 'JetBrains Mono, monospace', color: '#c9a84c', opacity: 0.7 }}>
+                  {url}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-8 lg:pl-12">
-          <FeatureCard 
-            icon={<Cpu className="text-primary-400" size={28} />}
-            title="AI Semantic Analysis"
-            desc="Gemini extracts auth patterns, rate limits, and endpoint schemas even from messy HTML."
-          />
-          <FeatureCard 
-            icon={<Code2 className="text-blue-400" size={28} />}
-            title="Production-Ready Wrappers"
-            desc="Generates idiomatic, type-safe (where applicable) SDKs with built-in error handling."
-          />
-          <FeatureCard 
-            icon={<Zap className="text-yellow-400" size={28} />}
-            title="Zero to Integrated in Minutes"
-            desc="Stop writing boilerplate. Get usage examples and setup instructions instantly."
-          />
+        {/* Features */}
+        <div className="lg:col-span-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {FEATURES.map(({ icon: Icon, title, desc }) => (
+            <div key={title} className="card p-5" style={{ transition: 'border-color 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = '#243a2a'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = '#1a2e22'}
+            >
+              <Icon size={14} style={{ color: '#c9a84c', marginBottom: '0.75rem' }} strokeWidth={1.5} />
+              <h3 style={{ fontSize: '0.8rem', fontWeight: 600, color: '#ede5d0', marginBottom: '0.35rem', letterSpacing: '0.02em' }}>
+                {title}
+              </h3>
+              <p style={{ fontSize: '0.75rem', color: '#8a8a80', lineHeight: 1.7 }}>{desc}</p>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  );
-}
 
-function FeatureCard({ icon, title, desc }) {
-  return (
-    <div className="flex gap-4 p-6 rounded-xl glass-dark hover:bg-dark-800/80 transition-colors">
-      <div className="flex-shrink-0 mt-1">
-        <div className="w-12 h-12 rounded-lg bg-dark-900 border border-white/10 flex items-center justify-center shadow-inner">
-          {icon}
-        </div>
+      {/* ── Bottom rule ── */}
+      <div style={{ borderTop: '1px solid #1a2e22', paddingTop: '1.5rem' }}>
+        <p style={{ textAlign: 'center', fontSize: '0.72rem', color: '#666660', letterSpacing: '0.04em' }}>
+          Works with any publicly accessible API documentation — REST APIs, third-party services, or custom endpoints.
+        </p>
       </div>
-      <div>
-        <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-        <p className="text-gray-400 leading-relaxed">{desc}</p>
-      </div>
+
     </div>
   );
 }

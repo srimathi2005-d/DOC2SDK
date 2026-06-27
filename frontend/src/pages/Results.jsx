@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, AlertTriangle } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Package, ChevronLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
@@ -12,124 +12,197 @@ import { apiService } from '../services/apiService.js';
 
 SyntaxHighlighter.registerLanguage('bash', bash);
 
+const TABS = ['Code', 'Guide'];
+
 export default function Results() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const location   = useLocation();
+  const navigate   = useNavigate();
   const { apiData, reqInfo } = location.state || {};
-  
-  const [generating, setGenerating] = useState(true);
+
+  const [generating,     setGenerating]     = useState(true);
   const [generationData, setGenerationData] = useState(null);
-  const [error, setError] = useState(null);
+  const [error,          setError]          = useState(null);
+  const [activeTab,      setActiveTab]      = useState('Code');
 
   useEffect(() => {
     if (!apiData) return;
-    
-    // Trigger Generation process immediately on load
-    const generateCode = async () => {
+    const run = async () => {
       try {
         const result = await apiService.generateSDK(apiData, reqInfo.language, reqInfo.useCase);
         setGenerationData(result.data);
       } catch (err) {
-        console.error(err);
         setError('Failed to generate wrapper code.');
       } finally {
         setGenerating(false);
       }
     };
-    generateCode();
+    run();
   }, [apiData, reqInfo]);
 
   if (!apiData) {
     return (
-      <div className="flex flex-col items-center justify-center py-24">
-        <p className="text-xl text-gray-400 mb-6">No analysis data found.</p>
-        <button onClick={() => navigate('/')} className="text-primary-400 hover:text-primary-300 flex items-center gap-2">
-          <ArrowLeft size={20} /> Go Back
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem', textAlign: 'center' }}>
+        <p style={{ color: '#8a8a80', fontSize: '0.875rem', marginBottom: '1rem' }}>No analysis data found.</p>
+        <button onClick={() => navigate('/')} className="btn-secondary">
+          <ChevronLeft size={14} /> Back to home
         </button>
       </div>
     );
   }
 
+  const sdk = generationData?.sdkRecommendation;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex items-center gap-4 mb-8">
-        <button onClick={() => navigate('/')} className="p-2 rounded-lg bg-dark-800 hover:bg-dark-700 text-gray-400 transition-colors">
-          <ArrowLeft size={20} />
+    <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+
+      {/* ── Page header ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <button onClick={() => navigate('/')} className="btn-secondary" style={{ padding: '0.35rem 0.6rem' }}>
+          <ChevronLeft size={14} />
         </button>
-        <div>
-          <h1 className="text-3xl font-bold">Integration Dashboard</h1>
-          <p className="text-gray-400 text-sm mt-1">Generated for <span className="text-primary-400">{reqInfo?.url}</span></p>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#c9a84c', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Integration Dashboard
+          </h1>
+          <p style={{ fontSize: '0.72rem', color: '#8a8a80', marginTop: '0.2rem' }}>
+            Source:&nbsp;
+            <a href={reqInfo?.url} target="_blank" rel="noopener noreferrer"
+              style={{ color: '#c9a84c', fontFamily: 'JetBrains Mono, monospace', opacity: 0.8 }}>
+              {reqInfo?.url}
+            </a>
+          </p>
         </div>
+        <span style={{ fontSize: '0.7rem', fontFamily: 'JetBrains Mono, monospace', color: '#c9a84c', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.25rem 0.6rem', borderRadius: '2px' }}>
+          {reqInfo?.language}
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Summary & Endpoints */}
-        <div className="space-y-8 lg:col-span-1">
+      {/* ── Two-column layout ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem', alignItems: 'start' }}
+        className="lg:grid-cols-[1fr_2fr] grid-cols-1">
+
+        {/* Left panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <ResultCard data={apiData} />
 
-          {/* SDK Recommendation Card */}
-          {generating ? (
-            <div className="glass-dark rounded-xl p-6 shadow-lg border border-white/5 flex items-center justify-center h-32">
-              <Loader text="Analyzing optimal SDK..." />
+          {/* SDK card */}
+          <div className="card" style={{ overflow: 'hidden' }}>
+            <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #1a2e22', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Package size={12} style={{ color: '#8a8a80' }} />
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#b0a898' }}>
+                SDK Recommendation
+              </span>
             </div>
-          ) : generationData?.sdkRecommendation?.exists ? (
-            <div className="glass-dark rounded-xl p-6 shadow-lg border border-white/5">
-               <h2 className="text-xl font-semibold mb-4">SDK Recommendation</h2>
-               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                 <p className="text-green-400 font-medium mb-1">Official/Community SDK Found!</p>
-                 <p className="text-gray-300 text-sm mb-2">{generationData.sdkRecommendation.name}</p>
-                 <code className="text-xs bg-dark-900 px-2 py-1 rounded text-gray-300">{generationData.sdkRecommendation.packageCommand}</code>
-               </div>
+            <div style={{ padding: '1rem' }}>
+              {generating ? (
+                <Loader text="Detecting SDK..." />
+              ) : sdk?.exists ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <CheckCircle size={13} style={{ color: '#22c55e' }} />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#22c55e' }}>Official SDK Found</span>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '0.65rem', color: '#666660', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Package</p>
+                    <p style={{ fontSize: '0.85rem', fontWeight: 600, color: '#ede5d0' }}>{sdk.name}</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '0.65rem', color: '#666660', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.3rem' }}>Install</p>
+                    <code style={{ fontSize: '0.72rem', fontFamily: 'JetBrains Mono, monospace', color: '#c9a84c', background: '#0b1610', border: '1px solid #1a2e22', padding: '0.35rem 0.6rem', borderRadius: '3px', display: 'block', wordBreak: 'break-all' }}>
+                      {sdk.packageCommand}
+                    </code>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <AlertTriangle size={13} style={{ color: '#d4b565' }} />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d4b565' }}>Custom Integration</span>
+                  </div>
+                  <p style={{ fontSize: '0.75rem', color: '#8a8a80', lineHeight: 1.7 }}>
+                    No official SDK detected. Generated REST wrapper using{' '}
+                    <code style={{ fontFamily: 'JetBrains Mono, monospace', color: '#ede5d0' }}>{sdk?.restLibrary || 'HTTP'}</code>.
+                  </p>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="glass-dark rounded-xl p-6 shadow-lg border border-white/5">
-              <h2 className="text-xl font-semibold mb-4">SDK Recommendation</h2>
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-                <p className="text-yellow-400 font-medium mb-1 flex items-center gap-2"><AlertTriangle size={16}/> Custom Integration</p>
-                <p className="text-gray-300 text-sm">No official SDK detected. Generating REST wrapper via {generationData?.sdkRecommendation?.restLibrary || 'HTTP'}.</p>
-              </div>
-            </div>
-          )}
+          </div>
 
           <EndpointTable endpoints={apiData.endpoints} />
         </div>
 
-        {/* Right Column: Code Generator & Guide */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* Code Viewer */}
-          {generating ? (
-            <div className="glass-dark rounded-xl shadow-lg border border-white/5 h-[600px] flex flex-col items-center justify-center space-y-4">
-              <Loader text="Generating Wrapper Code..." />
-              <p className="text-sm text-gray-400 text-center px-12">Gemini is writing production-ready {reqInfo?.language} code, setting up auth handlers, and implementing endpoints.</p>
+        {/* Right panel */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+          {/* Tab bar */}
+          <div style={{ display: 'flex', alignItems: 'center', borderBottom: '1px solid #1a2e22' }}>
+            {TABS.map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)}
+                style={{
+                  padding: '0.65rem 1.25rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  borderBottom: `2px solid ${activeTab === tab ? '#c9a84c' : 'transparent'}`,
+                  color: activeTab === tab ? '#c9a84c' : '#666660',
+                  transition: 'color 0.15s, border-color 0.15s',
+                  marginBottom: '-1px',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  border: 'none',
+                  borderBottom: `2px solid ${activeTab === tab ? '#c9a84c' : 'transparent'}`,
+                }}>
+                {tab}
+              </button>
+            ))}
+            <div style={{ marginLeft: 'auto', paddingBottom: '0.5rem' }}>
+              {generating && <Loader text="Generating..." />}
             </div>
-          ) : (
-            <CodeViewer 
-              code={generationData?.wrapperCode} 
-              language={reqInfo?.language} 
-              filename={generationData?.filename} 
-            />
+          </div>
+
+          {/* Code tab */}
+          {activeTab === 'Code' && (
+            generating ? (
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', gap: '0.75rem' }}>
+                <Loader text="Generating wrapper code..." />
+                <p style={{ fontSize: '0.75rem', color: '#666660', textAlign: 'center', maxWidth: '280px', lineHeight: 1.7 }}>
+                  AI is writing production-ready {reqInfo?.language} code with auth handling and endpoint implementations.
+                </p>
+              </div>
+            ) : error ? (
+              <div className="card" style={{ padding: '1.25rem' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#f87171' }}>
+                  <AlertTriangle size={14} style={{ marginTop: '1px', flexShrink: 0 }} />
+                  <div>
+                    <p style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.25rem' }}>Generation Failed</p>
+                    <p style={{ fontSize: '0.75rem', color: '#8a8a80' }}>{error}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <CodeViewer code={generationData?.wrapperCode} language={reqInfo?.language} filename={generationData?.filename} />
+            )
           )}
 
-          {/* Integration Guide */}
-          {!generating && generationData?.integrationGuide && (
-            <div className="glass-dark rounded-xl shadow-lg border border-white/5 p-6">
-               <h2 className="text-xl font-semibold mb-4">Integration Guide</h2>
-               <div className="prose prose-invert max-w-none">
-                  <SyntaxHighlighter 
-                    language="bash" 
-                    style={vscDarkPlus}
-                    customStyle={{ borderRadius: '0.5rem', padding: '1rem', background: '#1E1E1E' }}
-                  >
-                    {generationData.integrationGuide}
-                  </SyntaxHighlighter>
-               </div>
-            </div>
-          )}
-          
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 rounded-lg text-sm">
-              {error}
+          {/* Guide tab */}
+          {activeTab === 'Guide' && (
+            <div className="card" style={{ overflow: 'hidden' }}>
+              <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #1a2e22' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#b0a898' }}>
+                  Integration Guide
+                </span>
+              </div>
+              {generating ? (
+                <div style={{ padding: '1.5rem' }}><Loader text="Generating guide..." /></div>
+              ) : generationData?.integrationGuide ? (
+                <SyntaxHighlighter language="bash" style={vscDarkPlus}
+                  customStyle={{ margin: 0, padding: '1.25rem', background: '#060d09', fontSize: '12px', fontFamily: '"JetBrains Mono", Menlo, monospace', lineHeight: '1.8', borderRadius: 0 }}>
+                  {generationData.integrationGuide}
+                </SyntaxHighlighter>
+              ) : (
+                <p style={{ padding: '1.5rem', textAlign: 'center', fontSize: '0.75rem', color: '#666660' }}>No guide available.</p>
+              )}
             </div>
           )}
 

@@ -2,10 +2,9 @@ import { Download } from 'lucide-react';
 
 export default function DownloadButton({ code, language, filename }) {
   const handleDownload = () => {
-    const extMap = { 'javascript': 'js', 'python': 'py', 'java': 'java' };
+    const extMap = { javascript: 'js', python: 'py', java: 'java' };
     const ext = extMap[language] || 'txt';
     const finalName = filename || `api_client.${ext}`;
-    
     const blob = new Blob([code], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -16,11 +15,13 @@ export default function DownloadButton({ code, language, filename }) {
   };
 
   return (
-    <button 
+    <button
       onClick={handleDownload}
-      className="flex items-center gap-2 px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded transition-colors shadow-lg shadow-primary-500/20"
+      className="btn-primary"
+      style={{ padding: '0.3rem 0.75rem', fontSize: '0.7rem', gap: '0.35rem' }}
     >
-      <Download size={16} /> Download
+      <Download size={12} />
+      Download
     </button>
   );
 }
