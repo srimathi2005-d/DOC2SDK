@@ -10,6 +10,11 @@ export const apiService = {
   
   generateSDK: async (apiData, language, useCase) => {
     const response = await axios.post(`${API_BASE}/generate`, { apiData, language, useCase });
-    return response.data; // returns { data: generationData, downloadPath: string }
-  }
+    return response.data;
+  },
+
+  chatWithDocs: async (question, apiContext) => {
+    const response = await axios.post(`${API_BASE}/chat`, { question, apiContext });
+    return response.data.answer;
+  },
 };

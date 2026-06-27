@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AlertTriangle, CheckCircle, Package, ChevronLeft } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Package, ChevronLeft, MessageSquare, Play } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
 import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
@@ -8,11 +8,13 @@ import ResultCard from '../components/ResultCard.jsx';
 import EndpointTable from '../components/EndpointTable.jsx';
 import CodeViewer from '../components/CodeViewer.jsx';
 import Loader from '../components/Loader.jsx';
+import ComplexityDashboard from '../components/ComplexityDashboard.jsx';
+import ZipDownload from '../components/ZipDownload.jsx';
 import { apiService } from '../services/apiService.js';
 
 SyntaxHighlighter.registerLanguage('bash', bash);
 
-const TABS = ['Code', 'Guide'];
+const TABS = ['Code', 'Guide', 'Dashboard', 'Download'];
 
 export default function Results() {
   const location   = useLocation();
@@ -26,10 +28,17 @@ export default function Results() {
 
   useEffect(() => {
     if (!apiData) return;
+    // Save to sessionStorage for Chat and Playground pages
+    try {
+      sessionStorage.setItem('doc2sdk_apiData', JSON.stringify(apiData));
+    } catch {}
+
     const run = async () => {
       try {
         const result = await apiService.generateSDK(apiData, reqInfo.language, reqInfo.useCase);
         setGenerationData(result.data);
+        // Also save generationData
+        try { sessionStorage.setItem('doc2sdk_generationData', JSON.stringify(result.data)); } catch {}
       } catch (err) {
         setError('Failed to generate wrapper code.');
       } finally {
@@ -56,7 +65,7 @@ export default function Results() {
     <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1.5rem' }}>
 
       {/* ── Page header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
         <button onClick={() => navigate('/')} className="btn-secondary" style={{ padding: '0.35rem 0.6rem' }}>
           <ChevronLeft size={14} />
         </button>
@@ -72,9 +81,19 @@ export default function Results() {
             </a>
           </p>
         </div>
-        <span style={{ fontSize: '0.7rem', fontFamily: 'JetBrains Mono, monospace', color: '#c9a84c', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.25rem 0.6rem', borderRadius: '2px' }}>
-          {reqInfo?.language}
-        </span>
+
+        {/* Quick access buttons */}
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.7rem', fontFamily: 'JetBrains Mono, monospace', color: '#c9a84c', background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', padding: '0.25rem 0.6rem', borderRadius: '2px' }}>
+            {reqInfo?.language}
+          </span>
+          <button onClick={() => navigate('/chat')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.68rem' }}>
+            <MessageSquare size={11} /> Ask Docs
+          </button>
+          <button onClick={() => navigate('/playground')} className="btn-secondary" style={{ padding: '0.3rem 0.65rem', fontSize: '0.68rem' }}>
+            <Play size={11} /> Playground
+          </button>
+        </div>
       </div>
 
       {/* ── Two-column layout ── */}
@@ -144,14 +163,13 @@ export default function Results() {
                   fontWeight: 500,
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
-                  borderBottom: `2px solid ${activeTab === tab ? '#c9a84c' : 'transparent'}`,
                   color: activeTab === tab ? '#c9a84c' : '#666660',
-                  transition: 'color 0.15s, border-color 0.15s',
-                  marginBottom: '-1px',
                   background: 'transparent',
-                  cursor: 'pointer',
                   border: 'none',
                   borderBottom: `2px solid ${activeTab === tab ? '#c9a84c' : 'transparent'}`,
+                  cursor: 'pointer',
+                  marginBottom: '-1px',
+                  transition: 'color 0.15s, border-color 0.15s',
                 }}>
                 {tab}
               </button>
@@ -161,7 +179,7 @@ export default function Results() {
             </div>
           </div>
 
-          {/* Code tab */}
+          {/* ── Code tab ── */}
           {activeTab === 'Code' && (
             generating ? (
               <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', gap: '0.75rem' }}>
@@ -185,7 +203,7 @@ export default function Results() {
             )
           )}
 
-          {/* Guide tab */}
+          {/* ── Guide tab ── */}
           {activeTab === 'Guide' && (
             <div className="card" style={{ overflow: 'hidden' }}>
               <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #1a2e22' }}>
@@ -204,6 +222,28 @@ export default function Results() {
                 <p style={{ padding: '1.5rem', textAlign: 'center', fontSize: '0.75rem', color: '#666660' }}>No guide available.</p>
               )}
             </div>
+          )}
+
+          {/* ── Dashboard tab ── */}
+          {activeTab === 'Dashboard' && (
+            generating ? (
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', gap: '0.75rem' }}>
+                <Loader text="Computing metrics..." />
+              </div>
+            ) : (
+              <ComplexityDashboard apiData={apiData} generationData={generationData} />
+            )
+          )}
+
+          {/* ── Download tab ── */}
+          {activeTab === 'Download' && (
+            generating ? (
+              <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', gap: '0.75rem' }}>
+                <Loader text="Preparing download..." />
+              </div>
+            ) : (
+              <ZipDownload apiData={apiData} generationData={generationData} language={reqInfo?.language || 'javascript'} />
+            )
           )}
 
         </div>

@@ -102,4 +102,61 @@
   .badge-patch  { background: rgba(251,146,60,0.10); color: #fdba74; border: 1px solid rgba(251,146,60,0.20); }
   .badge-delete { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
   .badge-default{ background: rgba(176,168,152,0.10); color: #b0a898; border: 1px solid rgba(176,168,152,0.2); }
+
+  /* Section dividers */
+  .section-divider {
+    border: none;
+    border-top: 1px solid #1a2e22;
+    margin: 0;
+  }
+
+  /* Timeline dot */
+  .timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Stat card value */
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+  }
+
+  /* Progress bar track */
+  .progress-track {
+    height: 4px;
+    background: #1a2e22;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+  /* Chat bubble - user */
+  .chat-bubble-user {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.18);
+    color: #ede5d0;
+  }
+
+  /* Chat bubble - assistant */
+  .chat-bubble-assistant {
+    background: #0f1d14;
+    border: 1px solid #1a2e22;
+    color: #b0a898;
+  }
+
+  /* Method badge */
+  .method-get    { color: #60a5fa; }
+  .method-post   { color: #4ade80; }
+  .method-put    { color: #fb923c; }
+  .method-patch  { color: #fbbf24; }
+  .method-delete { color: #f87171; }
 }

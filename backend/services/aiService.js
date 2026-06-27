@@ -95,9 +95,69 @@ export async function askAI(prompt) {
     } catch (err) {
       console.warn(`[Groq] Model "${model}" failed (${err.status || 'ERR'}): ${err.message}`);
       lastError = err;
-      if (err.status !== 429 && err.status !== 503) break;
+      // Retry on rate-limit (429), server error (500), unavailable (503), or network error (no status)
+      const isTransient = !err.status || err.status === 429 || err.status === 500 || err.status === 503;
+      if (!isTransient) break;
+      // Brief pause before trying next model
+      await new Promise(r => setTimeout(r, 1000));
     }
   }
 
   throw new Error(`Groq API failed. Last error: ${lastError?.message}`);
+}
+
+/**
+ * Chat variant — returns plain text, not JSON.
+ * Used for RAG-style documentation Q&A.
+ */
+export async function askAIChat(systemPrompt, userMessage) {
+  const apiKey = process.env.GROQ_API_KEY;
+
+  if (!apiKey || apiKey === 'your_groq_api_key_here') {
+    throw new Error('GROQ_API_KEY is not configured.');
+  }
+
+  let lastError;
+
+  for (const model of GROQ_MODELS) {
+    try {
+      const res = await fetch(GROQ_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user',   content: userMessage  },
+          ],
+          temperature: 0.3,
+          max_tokens: 1024,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        const msg = data?.error?.message || JSON.stringify(data);
+        const err = new Error(msg);
+        err.status = res.status;
+        throw err;
+      }
+
+      const text = data.choices?.[0]?.message?.content;
+      if (!text) throw new Error('No content returned from Groq API.');
+      return text.trim();
+
+    } catch (err) {
+      console.warn(`[Groq/Chat] Model "${model}" failed: ${err.message}`);
+      lastError = err;
+      const isTransient = !err.status || err.status === 429 || err.status === 500 || err.status === 503;
+      if (!isTransient) break;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+
+  throw new Error(`Groq chat failed. Last error: ${lastError?.message}`);
 }

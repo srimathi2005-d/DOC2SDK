@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import analyzeRoutes from './routes/analyzeRoutes.js';
 import generateRoutes from './routes/generateRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 // Mount routes
 app.use('/api', analyzeRoutes);
 app.use('/api', generateRoutes);
+app.use('/api', chatRoutes);
 
 // Basic health check
 app.get('/health', (req, res) => {
