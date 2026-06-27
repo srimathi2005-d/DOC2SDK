@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Doc2SDK 🚀
 
 **AI-Powered API Documentation to SDK & Integration Code Generator**
@@ -9,8 +9,6 @@
 ![Stack](https://img.shields.io/badge/Stack-React%20%7C%20Node.js%20%7C%20Gemini-blue)
 ![AI](https://img.shields.io/badge/AI-LLM%20Powered-purple)
 ![License](https://img.shields.io/badge/License-MIT-green)
-
----
 
 # 📌 Overview
 
