@@ -612,64 +612,6 @@ Download Ready-to-Use Integration Code 🚀
 
 # 🎥 Demo
 
-## Doc2SDK: AI-Powered API Integration Copilot
-
-### Overview
-
-Doc2SDK is an AI-powered copilot that streamlines third-party API integration. It takes an API documentation URL, a target use case, and a preferred language, then extracts the key integration details and generates production-ready wrapper code with setup guidance.
-
- 
-
-**What Doc2SDK Does** [0:11](https://loom.com/share/1d42052a68ca488c99d209584b059a93?t=11)
-
-![generated-image-at-00:00:11](https://loom.com/i/5deb50cf90ba40d89eda17f717392037?workflows_screenshot=true)
-
-- Accepts an API documentation URL, a use case description, and a target language such as Java, Python, JavaScript, or Node.js.
-- Analyzes the documentation to identify authentication requirements and important endpoints.
-- Recommends whether an SDK or direct REST integration is the better fit.
-- Generates wrapper code and setup instructions to speed up implementation.
-
- 
-
-**Architecture and Core Stack** [1:13](https://loom.com/share/1d42052a68ca488c99d209584b059a93?t=73)
-
-![generated-image-at-00:01:13](https://loom.com/i/9dfcb6eadeb14847bde9fd35abc73453?workflows_screenshot=true)
-
-- Frontend: React and Tailwind CSS.
-- Backend: Node.js and Express.js.
-- Documentation extraction: Axios and Cheerio.
-- LLM layer: Gemini and Groq for semantic understanding and intelligent output generation.
-
- 
-
-**Documentation-Grounded AI Chat** [1:35](https://loom.com/share/1d42052a68ca488c99d209584b059a93?t=95)
-
-![generated-image-at-00:01:35](https://loom.com/i/d1b6adfcca3b467ebea6cf3626fb0eb5?workflows_screenshot=true)
-
-- Includes a chat assistant that answers questions based on the provided API documentation.
-- Helps users clarify integration details and SDK generation questions without leaving the app.
-
- 
-
-**API Playground and Testing** [1:46](https://loom.com/share/1d42052a68ca488c99d209584b059a93?t=106)
-
-![generated-image-at-00:01:46](https://loom.com/i/e54e5647b99341a58ff77fd68092913e?workflows_screenshot=true)
-
-- Provides an API testing playground for trying endpoints before integration.
-- Generates request payloads in JSON format.
-- Shows request/response logs to help validate behavior during development.
-
- 
-
-**Integration Complexity Dashboard** [2:04](https://loom.com/share/1d42052a68ca488c99d209584b059a93?t=124)
-
-![generated-image-at-00:02:04](https://loom.com/i/bffad0c2295645df8bbc2dff04af6663?workflows_screenshot=true)
-
-- Surfaces potential integration risks.
-- Provides AI recommendations to improve or upskill the generated code.
-- Combines a playground and chat access for a more guided integration workflow.
-
-### Link to Loom
 
 <https://loom.com/share/1d42052a68ca488c99d209584b059a93>
 
