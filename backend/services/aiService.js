@@ -4,9 +4,9 @@ dotenv.config();
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 const GROQ_MODELS = [
-  'llama-3.3-70b-versatile',
-  'llama3-8b-8192',
-  'mixtral-8x7b-32768',
+  'llama-3.3-70b-versatile',   // Primary — best quality
+  'llama-3.1-8b-instant',      // Fast fallback
+  'llama-3.1-70b-versatile',   // Final fallback
 ];
 
 /**
@@ -95,15 +95,23 @@ export async function askAI(prompt) {
     } catch (err) {
       console.warn(`[Groq] Model "${model}" failed (${err.status || 'ERR'}): ${err.message}`);
       lastError = err;
+      // Skip decommissioned models immediately and try the next one
+      const isDecommissioned = err.message?.toLowerCase().includes('decommission');
+      if (isDecommissioned) continue;
       // Retry on rate-limit (429), server error (500), unavailable (503), or network error (no status)
       const isTransient = !err.status || err.status === 429 || err.status === 500 || err.status === 503;
       if (!isTransient) break;
-      // Brief pause before trying next model
-      await new Promise(r => setTimeout(r, 1000));
+      // Longer pause for rate limits, standard pause for other transient errors
+      const delay = err.status === 429 ? 3000 : 2000;
+      await new Promise(r => setTimeout(r, delay));
     }
   }
 
-  throw new Error(`Groq API failed. Last error: ${lastError?.message}`);
+  const isRateLimit = lastError?.status === 429;
+  const finalMsg = isRateLimit
+    ? 'Groq rate limit reached. Please wait 30 seconds and try again.'
+    : `Groq API failed. Last error: ${lastError?.message}`;
+  throw new Error(finalMsg);
 }
 
 /**

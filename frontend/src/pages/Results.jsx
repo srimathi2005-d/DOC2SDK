@@ -40,7 +40,7 @@ export default function Results() {
         // Also save generationData
         try { sessionStorage.setItem('doc2sdk_generationData', JSON.stringify(result.data)); } catch {}
       } catch (err) {
-        setError('Failed to generate wrapper code.');
+        setError(err.response?.data?.error || err.message || 'Failed to generate wrapper code.');
       } finally {
         setGenerating(false);
       }
